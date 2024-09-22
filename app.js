@@ -1,0 +1,209 @@
+// Data structure to store calories burned per day
+let caloriesData = {};
+const calorieGoal = 70000;
+
+// Function to save caloriesData to localStorage
+function saveCaloriesData() {
+  localStorage.setItem("caloriesData", JSON.stringify(caloriesData));
+}
+
+// Function to load caloriesData from localStorage
+function loadCaloriesData() {
+  const storedData = localStorage.getItem("caloriesData");
+  if (storedData) {
+    caloriesData = JSON.parse(storedData);
+    updateCalorieGoal();
+  }
+}
+
+// Function to update the total calories burned and the remaining goal
+function updateCalorieGoal() {
+  // Sum the calories burned from all days
+  let totalCaloriesBurned = Object.values(caloriesData).reduce(
+    (total, calories) => total + Number(calories),
+    0
+  );
+
+  // Calculate remaining calories to reach the goal
+  let remainingCaloriesCalc = calorieGoal - totalCaloriesBurned;
+  let remainingCalories = remainingCaloriesCalc.toLocaleString();
+
+  // Update the H2 element with the total burned and the remaining to the goal
+  let calorieGoalText = `Calories Burned: ${totalCaloriesBurned.toLocaleString()} / 70,000 (${remainingCalories} left)`;
+  document.getElementById("calorieGoal").textContent = calorieGoalText;
+
+  // Update the display on each date in the calendar if calories have been entered
+  document.querySelectorAll(".day").forEach((dayDiv, index) => {
+    let dayDate = dayDiv.title;
+    if (caloriesData[dayDate]) {
+      let caloriesDisplay = dayDiv.querySelector(".calories-display");
+      caloriesDisplay.textContent = `${caloriesData[dayDate]}`;
+    }
+  });
+  displayRemainingDays(remainingCaloriesCalc);
+}
+
+// Function to calculate the number of days remaining from the 45 days
+function calculateRemainingDays() {
+  // Set the start date (September 22)
+  let currentYear = new Date().getFullYear();
+  let startDate = new Date(currentYear, 8, 22); // September is month 8 (0-indexed)
+
+  // Get the current date
+  let currentDate = new Date();
+
+  // Calculate the difference in time (in milliseconds)
+  let timeDifference = currentDate - startDate;
+
+  // Convert the difference from milliseconds to days
+  let daysPassed = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+
+  // Subtract the days passed from the total 45 days
+  let remainingDays = 45 - daysPassed;
+
+  // Ensure remaining days is never less than 0 (in case the current date is beyond the 45-day period)
+  return remainingDays > 0 ? remainingDays : 0;
+}
+
+// Function to display remaining days on the page
+function displayRemainingDays(remainingCaloriesCalc) {
+  // Calculate the remaining days
+  let remainingDays = calculateRemainingDays();
+  let calsPerDay = remainingCaloriesCalc / remainingDays;
+
+  // Update the P element with the remaining cals per day
+  let remainingDaysText = `You need to burn ${Math.ceil(
+    calsPerDay
+  )} calories per day to reach your goal.`;
+  document.getElementById("info").textContent = remainingDaysText;
+  console.log(
+    `You need to burn ${calsPerDay} calories per day to reach your goal.`
+  );
+}
+
+// Function to generate a 45-day calendar starting from September 22
+function generate45DayCalendar() {
+  // Create a date object for September 22 of the current year
+  let currentYear = new Date().getFullYear();
+  let startDate = new Date(currentYear, 8, 22); // September is month 8 (0-indexed)
+
+  let daysInCalendar = 45;
+
+  // Get calendar container
+  let calendarContainer = document.getElementById("calendar");
+
+  // Loop through 45 days
+  for (let i = 0; i < daysInCalendar; i++) {
+    // Create a new div for each day
+    let dayDiv = document.createElement("div");
+    dayDiv.className = "day";
+
+    // Get the date for this iteration
+    let currentDate = new Date(startDate);
+    currentDate.setDate(startDate.getDate() + i);
+
+    // Format the date (e.g., "Sep 22")
+    let formattedDate = currentDate.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+
+    // Set the text content to the formatted date
+    dayDiv.textContent = formattedDate;
+
+    // Add a calories display below the date (will update after input)
+    let caloriesDisplay = document.createElement("div");
+    caloriesDisplay.className = "calories-display";
+    dayDiv.appendChild(caloriesDisplay);
+
+    // Add tooltip using the title attribute with the full date (e.g., "September 22, 2024")
+    dayDiv.title = currentDate.toLocaleDateString("en-US", {
+      weekday: "long", // Full day of the week
+      year: "numeric", // Full year
+      month: "long", // Full month name
+      day: "numeric", // Day of the month
+    });
+
+    // Add a click event listener to handle clicks on the date
+    dayDiv.addEventListener("click", function () {
+      openModal(dayDiv.title, i); // Pass the index for later use
+    });
+
+    // Append each day div to the calendar container
+    calendarContainer.appendChild(dayDiv);
+  }
+}
+
+// Function to open the modal and show the selected date
+function openModal(selectedDate, dayIndex) {
+  // Show the modal
+  document.getElementById("calorieModal").style.display = "flex";
+
+  // Set the modal date
+  document.getElementById(
+    "modalDate"
+  ).textContent = `Enter calories burned for: ${selectedDate}`;
+
+  // Store the selected date and index in the modal's data attributes
+  document
+    .getElementById("calorieModal")
+    .setAttribute("data-date", selectedDate);
+  document
+    .getElementById("calorieModal")
+    .setAttribute("data-day-index", dayIndex);
+}
+
+// Function to close the modal
+function closeModal() {
+  document.getElementById("calorieModal").style.display = "none";
+}
+
+// Function to submit calories for the selected date
+function submitCalories() {
+  // Get the selected date and day index from the modal
+  let selectedDate = document
+    .getElementById("calorieModal")
+    .getAttribute("data-date");
+  let dayIndex = document
+    .getElementById("calorieModal")
+    .getAttribute("data-day-index");
+
+  // Get the entered calorie value
+  let calories = document.getElementById("calories").value;
+
+  if (calories && calories >= 0) {
+    // Store the calories burned for the selected date in the data structure
+    caloriesData[selectedDate] = calories;
+
+    // Save the updated data to localStorage
+    saveCaloriesData();
+
+    // Find the corresponding day in the calendar and update the display
+    let dayDiv = document.querySelectorAll(".day")[dayIndex];
+    let caloriesDisplay = dayDiv.querySelector(".calories-display");
+    caloriesDisplay.textContent = `${calories}`;
+
+    // Update the total calories burned and remaining goal
+    updateCalorieGoal();
+
+    // Close the modal after submitting
+    closeModal();
+
+    // Optionally, reset the input field for future inputs
+    document.getElementById("calories").value = "";
+  } else {
+    alert("Please enter a valid number of calories.");
+  }
+}
+
+// Attach event listeners for the modal buttons
+document.getElementById("closeModal").addEventListener("click", closeModal);
+document
+  .getElementById("submitCalories")
+  .addEventListener("click", submitCalories);
+
+// Load saved data from localStorage when the page loads
+window.onload = function () {
+  generate45DayCalendar();
+  loadCaloriesData();
+};
