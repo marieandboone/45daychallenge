@@ -8,14 +8,16 @@ body {
   justify-content: center;
   align-items: center;
   position: relative;
+  margin: 0;
+  padding: 0;
 }
 
 .dots {
   position: absolute;
   z-index: -10;
-  width: 75%;
+  width: 100%;
   max-width: 700px;
-  height: 450px;
+  height: 550px;
 }
 
 /* Basic styling for the h2 and calorie tracker */
@@ -32,7 +34,8 @@ body {
   grid-template-columns: repeat(7, 1fr); /* 7 days per row */
   gap: 10px;
   max-width: 600px;
-  margin: 50px 20px;
+  margin: 50px auto;
+  padding: 0px 10px;
 }
 
 .day {
@@ -90,5 +93,5 @@ body {
 
 #info {
   text-align: center;
-  padding: 20px 10px;
+  padding: 10px;
 }
