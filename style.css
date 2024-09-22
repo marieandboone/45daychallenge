@@ -32,7 +32,7 @@ body {
   grid-template-columns: repeat(7, 1fr); /* 7 days per row */
   gap: 10px;
   max-width: 600px;
-  margin: 50px auto;
+  margin: 50px 20px;
 }
 
 .day {
@@ -90,5 +90,5 @@ body {
 
 #info {
   text-align: center;
-  padding-top: 20px;
+  padding: 20px 10px;
 }
