@@ -24,6 +24,8 @@ function updateCalorieGoal() {
     0
   );
 
+  let poundsLeft = Math.round((totalCaloriesBurned / 3500) * 10) / 10;
+
   // Calculate remaining calories to reach the goal
   let remainingCaloriesCalc = calorieGoal - totalCaloriesBurned;
   let remainingCalories = remainingCaloriesCalc.toLocaleString();
@@ -40,7 +42,7 @@ function updateCalorieGoal() {
       caloriesDisplay.textContent = `${caloriesData[dayDate]}`;
     }
   });
-  displayRemainingDays(remainingCaloriesCalc);
+  displayRemainingDays(remainingCaloriesCalc, poundsLeft);
 }
 
 // Function to calculate the number of days remaining from the 45 days
@@ -66,19 +68,16 @@ function calculateRemainingDays() {
 }
 
 // Function to display remaining days on the page
-function displayRemainingDays(remainingCaloriesCalc) {
+function displayRemainingDays(remainingCaloriesCalc, poundsLeft) {
   // Calculate the remaining days
   let remainingDays = calculateRemainingDays();
   let calsPerDay = remainingCaloriesCalc / remainingDays;
 
   // Update the P element with the remaining cals per day
-  let remainingDaysText = `You need to burn ${Math.ceil(
+  let remainingDaysText = `You've lost ${poundsLeft} pounds! Keep burning ${Math.ceil(
     calsPerDay
   )} calories per day to reach your goal.`;
   document.getElementById("info").textContent = remainingDaysText;
-  console.log(
-    `You need to burn ${calsPerDay} calories per day to reach your goal.`
-  );
 }
 
 // Function to generate a 45-day calendar starting from September 22
