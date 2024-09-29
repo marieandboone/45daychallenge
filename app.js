@@ -157,6 +157,113 @@ function closeModal() {
   document.getElementById("calorieModal").style.display = "none";
 }
 
+// Function to sum weekly calories based on start date
+function weeklyTotals() {
+  const ul = document.getElementById("weekly-totals");
+  // Define the start and end of the week you are interested in (example: week of September 23-27, 2024)
+  const startOfWeekOne = new Date("September 22, 2024");
+  const endOfWeekOne = new Date("September 28, 2024");
+
+  const startOfWeekTwo = new Date("September 29, 2024");
+  const endOfWeekTwo = new Date("October 5, 2024");
+
+  const startOfWeekThree = new Date("October 6, 2024");
+  const endOfWeekThree = new Date("October 12, 2024");
+
+  const startOfWeekFour = new Date("October 13, 2024");
+  const endOfWeekFour = new Date("October 19, 2024");
+
+  const startOfWeekFive = new Date("October 20, 2024");
+  const endOfWeekFive = new Date("October 26, 2024");
+
+  const startOfWeekSix = new Date("October 27, 2024");
+  const endOfWeekSix = new Date("November 2, 2024");
+
+  const startOfWeekSeven = new Date("November 3, 2024");
+  const endOfWeekSeven = new Date("November 5, 2024");
+
+  // Function to get values from the object for the specified week
+  let weekOneResult = [0];
+  let weekTwoResult = [0];
+  let weekThreeResult = [0];
+  let weekFourResult = [0];
+  let weekFiveResult = [0];
+  let weekSixResult = [0];
+  let weekSevenResult = [0];
+
+  for (const dateStr in caloriesData) {
+    // Convert the string date in the object key to an actual Date object
+    const currentDate = new Date(dateStr);
+
+    // Check if the current date falls within the desired week
+    if (currentDate >= startOfWeekOne && currentDate <= endOfWeekOne) {
+      weekOneResult.push(caloriesData[dateStr]);
+    } else if (currentDate >= startOfWeekTwo && currentDate <= endOfWeekTwo) {
+      weekTwoResult.push(caloriesData[dateStr]);
+    } else if (
+      currentDate >= startOfWeekThree &&
+      currentDate <= endOfWeekThree
+    ) {
+      weekThreeResult.push(caloriesData[dateStr]);
+    } else if (currentDate >= startOfWeekFour && currentDate <= endOfWeekFour) {
+      weekFourResult.push(caloriesData[dateStr]);
+    } else if (currentDate >= startOfWeekFive && currentDate <= endOfWeekFive) {
+      weekFiveResult.push(caloriesData[dateStr]);
+    } else if (currentDate >= startOfWeekSix && currentDate <= endOfWeekSix) {
+      weekSixResult.push(caloriesData[dateStr]);
+    } else if (
+      currentDate >= startOfWeekSeven &&
+      currentDate <= endOfWeekSeven
+    ) {
+      weekSevenResult.push(caloriesData[dateStr]);
+    }
+  }
+
+  let sumOne = weekOneResult
+    .map((str) => parseInt(str))
+    .reduce((acc, num) => acc + num);
+  let sumTwo = weekTwoResult
+    .map((str) => parseInt(str))
+    .reduce((acc, num) => acc + num);
+  let sumThree = weekThreeResult
+    .map((str) => parseInt(str))
+    .reduce((acc, num) => acc + num);
+  let sumFour = weekFourResult
+    .map((str) => parseInt(str))
+    .reduce((acc, num) => acc + num);
+  let sumFive = weekFiveResult
+    .map((str) => parseInt(str))
+    .reduce((acc, num) => acc + num);
+  let sumSix = weekSixResult
+    .map((str) => parseInt(str))
+    .reduce((acc, num) => acc + num);
+  let sumSeven = weekSevenResult
+    .map((str) => parseInt(str))
+    .reduce((acc, num) => acc + num);
+
+  let totalsArray = [
+    sumOne,
+    sumTwo,
+    sumThree,
+    sumFour,
+    sumFive,
+    sumSix,
+    sumSeven,
+  ];
+  // Output the filtered result
+
+  while (ul.firstChild) {
+    ul.removeChild(ul.firstChild);
+  }
+
+  for (let i = 0; i < totalsArray.length; i++) {
+    let ulLi = document.createElement("li");
+    // let weekNumber = ["One", "Two", "Three", "Four", "Five", "Six", "Seven"];
+    ulLi.innerText = `Week ${i + 1} Calories: ${totalsArray[i]}`;
+    ul.appendChild(ulLi);
+  }
+}
+
 // Function to submit calories for the selected date
 function submitCalories() {
   // Get the selected date and day index from the modal
@@ -185,8 +292,31 @@ function submitCalories() {
     // Update the total calories burned and remaining goal
     updateCalorieGoal();
 
+    weeklyTotals();
+
     // Close the modal after submitting
     closeModal();
+
+    // first way to get sum of week one calories
+    // console.log(caloriesData);
+
+    // let weekOne = [
+    //   "Sunday, September 22, 2024",
+    //   "Monday, September 23, 2024",
+    //   "Tuesday, September 24, 2024",
+    //   "Wednesday, September 25, 2024",
+    //   "Thursday, September 26, 2024",
+    //   "Friday, September 27, 2024",
+    //   "Saturday, September 28, 2024",
+    // ];
+    // let weekOneSum = 0;
+
+    // for (const date of weekOne) {
+    //   if (caloriesData.hasOwnProperty(date)) {
+    //     weekOneSum += parseInt(caloriesData[date]);
+    //   }
+    // }
+    // console.log(weekOneSum);
 
     // Optionally, reset the input field for future inputs
     document.getElementById("calories").value = "";
@@ -205,4 +335,5 @@ document
 window.onload = function () {
   generate45DayCalendar();
   loadCaloriesData();
+  weeklyTotals();
 };

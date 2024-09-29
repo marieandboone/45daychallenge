@@ -23,7 +23,18 @@ body {
   z-index: -10;
   width: 100%;
   max-width: 700px;
-  height: 425px;
+  height: 500px;
+  top: 158px;
+}
+
+#container ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+#container ul li {
+  padding: 1px 0;
 }
 
 /* Basic styling for the h2 and calorie tracker */
