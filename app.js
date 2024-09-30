@@ -277,7 +277,7 @@ function submitCalories() {
   // Get the entered calorie value
   let calories = document.getElementById("calories").value;
 
-  if (calories && calories >= 0) {
+  if (calories && calories > 0) {
     // Store the calories burned for the selected date in the data structure
     caloriesData[selectedDate] = calories;
 
@@ -320,6 +320,18 @@ function submitCalories() {
 
     // Optionally, reset the input field for future inputs
     document.getElementById("calories").value = "";
+  } else if (calories && calories === "0") {
+    delete caloriesData[selectedDate];
+    saveCaloriesData();
+    let dayDiv = document.querySelectorAll(".day")[dayIndex];
+    let caloriesDisplay = dayDiv.querySelector(".calories-display");
+    caloriesDisplay.textContent = "";
+    updateCalorieGoal();
+
+    weeklyTotals();
+    closeModal();
+    document.getElementById("calories").value = "";
+    console.log(caloriesData);
   } else {
     alert("Please enter a valid number of calories.");
   }
