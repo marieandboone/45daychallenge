@@ -259,7 +259,7 @@ function weeklyTotals() {
   for (let i = 0; i < totalsArray.length; i++) {
     let ulLi = document.createElement("li");
     // let weekNumber = ["One", "Two", "Three", "Four", "Five", "Six", "Seven"];
-    ulLi.innerText = `Week ${i + 1} Calories: ${totalsArray[i]} (${(
+    ulLi.innerText = `Week ${i + 1}: ${totalsArray[i]} kcals (${(
       totalsArray[i] / 3500
     ).toFixed(1)} lbs)`;
     ul.appendChild(ulLi);
