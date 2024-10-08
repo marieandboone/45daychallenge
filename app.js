@@ -74,9 +74,9 @@ function displayRemainingDays(remainingCaloriesCalc, poundsLeft) {
   let calsPerDay = remainingCaloriesCalc / remainingDays;
 
   // Update the P element with the remaining cals per day
-  let remainingDaysText = `You've lost ${poundsLeft} pounds!<br><br> Keep burning ${Math.ceil(
+  let remainingDaysText = `You've lost ${poundsLeft} pounds!<br><br> Burn ${Math.ceil(
     calsPerDay
-  )} calories per day to reach your goal.`;
+  )} kcals/day to reach your goal.`;
   document.getElementById("info").innerHTML = remainingDaysText;
 }
 
