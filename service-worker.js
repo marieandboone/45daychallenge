@@ -2,11 +2,11 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open("app-cache").then((cache) => {
       return cache.addAll([
-        "/",
-        "/index.html",
-        "/style.css",
-        "/app.js",
-        "/iconldpi.png",
+        "/45daychallenge/",
+        "/45daychallenge/index.html",
+        "/45daychallenge/style.css",
+        "/45daychallenge/app.js",
+        "/45daychallenge/iconldpi.png",
       ]);
     })
   );
