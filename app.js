@@ -34,6 +34,12 @@ function updateCalorieGoal() {
   let calorieGoalText = `Calories Burned: ${totalCaloriesBurned.toLocaleString()} / 70,000 (${remainingCalories} left)`;
   document.getElementById("calorieGoal").textContent = calorieGoalText;
 
+  // Update progress bar
+  let progressPercentage = (totalCaloriesBurned / calorieGoal) * 100;
+  let progressBar = document.getElementById("progress-bar");
+  progressBar.style.width = `${progressPercentage}%`;
+  progressBar.textContent = `${Math.round(progressPercentage)}%`;
+
   // Update the display on each date in the calendar if calories have been entered
   document.querySelectorAll(".day").forEach((dayDiv, index) => {
     let dayDate = dayDiv.title;
@@ -73,8 +79,10 @@ function displayRemainingDays(remainingCaloriesCalc, poundsLeft) {
   let remainingDays = calculateRemainingDays();
   let calsPerDay = remainingCaloriesCalc / remainingDays;
 
+  let daysCount = countDaysGreaterThan1500();
+
   // Update the P element with the remaining cals per day
-  let remainingDaysText = `You've lost ${poundsLeft} pounds!<br><br> Burn ${Math.ceil(
+  let remainingDaysText = `You've lost ${poundsLeft} pounds and earned ${daysCount} rewards!<br><br> Burn ${Math.ceil(
     calsPerDay
   )} kcals/day to reach your goal.`;
   document.getElementById("info").innerHTML = remainingDaysText;
@@ -337,6 +345,7 @@ function submitCalories() {
   } else {
     alert("Please enter a valid number of calories.");
   }
+  countDaysGreaterThan1500();
 }
 
 // Attach event listeners for the modal buttons
@@ -345,9 +354,23 @@ document
   .getElementById("submitCalories")
   .addEventListener("click", submitCalories);
 
+// Function to count all days with calories greater than or equal to 1500
+function countDaysGreaterThan1500() {
+  // Get the number of days with calories greater than or equal to 1500 from caloriesData
+  let daysCount = Object.entries(caloriesData).filter(
+    ([date, calories]) => Number(calories) >= 1500
+  ).length;
+
+  console.log(
+    `Total number of days with calories greater than or equal to 1500: ${daysCount}`
+  );
+  return daysCount;
+}
+
 // Load saved data from localStorage when the page loads
 window.onload = function () {
   generate45DayCalendar();
   loadCaloriesData();
   weeklyTotals();
+  countDaysGreaterThan1500();
 };

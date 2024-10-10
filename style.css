@@ -114,3 +114,40 @@ body {
     margin: 10px;
   }
 }
+
+#progress-container {
+  width: 60%;
+  height: 30px;
+  background-color: #e0e0e0;
+  margin: 10px 0;
+  overflow: hidden;
+  position: relative;
+  background-image: linear-gradient(
+    -45deg,
+    #10162f 15%,
+    #f9f9f9 15%,
+    #f9f9f9 50%,
+    #10162f 50%,
+    #10162f 75%,
+    #f9f9f9 75%,
+    #f9f9f9
+  );
+  background-size: 4px 4px; /* Adjust size for crosshatching effect */
+}
+
+#progress-bar {
+  height: 100%;
+  width: 0%;
+  background-color: #ffd300;
+  transition: width 0.5s ease-in-out;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 5px; /* Add some padding for space between text and right edge */
+  color: #10162f; /* Color of the percentage text */
+  font-weight: bold; /* Make the percentage text bold */
+  font-size: 15px;
+}
