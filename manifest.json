@@ -3,9 +3,9 @@
   "background_color": "#fff0e5",
   "icons": [
     {
-      "purpose": "any",
+      "purpose": "maskable",
       "sizes": "512x512",
-      "src": "iconldpi.png",
+      "src": "icon.png",
       "type": "image/png"
     }
   ],
