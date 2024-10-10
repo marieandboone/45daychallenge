@@ -132,7 +132,7 @@ body {
     #f9f9f9 70%,
     #f9f9f9 100%
   );
-  background-size: 10px 10px; /* Adjust size for crosshatching effect */
+  background-size: 5px 5px; /* Adjust size for crosshatching effect */
 }
 
 #progress-bar {

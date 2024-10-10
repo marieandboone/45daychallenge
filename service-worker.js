@@ -6,7 +6,7 @@ self.addEventListener("install", (event) => {
         "/index.html",
         "/style.css",
         "/app.js",
-        "/play_store_512.png",
+        "/iconldpi.png",
       ]);
     })
   );
