@@ -26,13 +26,33 @@
     </script>
   </head>
   <body>
+    <header>
+      <button id="reward-icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="100%"
+          viewBox="0 -960 960 960"
+          width="100%"
+          fill="#333"
+        >
+          <path
+            d="M280-120v-80h160v-124q-49-11-87.5-41.5T296-442q-75-9-125.5-65.5T120-640v-40q0-33 23.5-56.5T200-760h80v-80h400v80h80q33 0 56.5 23.5T840-680v40q0 76-50.5 132.5T664-442q-18 46-56.5 76.5T520-324v124h160v80H280Zm0-408v-152h-80v40q0 38 22 68.5t58 43.5Zm200 128q50 0 85-35t35-85v-240H360v240q0 50 35 85t85 35Zm200-128q36-13 58-43.5t22-68.5v-40h-80v152Zm-200-52Z"
+          />
+        </svg>
+      </button>
+    </header>
     <div id="container">
-      <h2 id="calorieGoal">Total Calories Burned: 0 / 70,000</h2>
-      <div id="progress-container">
-        <div id="progress-bar"></div>
+      <div id="header-container">
+        <div id="header-card">
+          <div id="progress-container">
+            <div id="progress-bar"></div>
+          </div>
+          <h2 id="calorieGoal">Total Calories Burned: 0 / 70,000</h2>
+          <p id="info"></p>
+        </div>
       </div>
       <div class="calendar" id="calendar"></div>
-      <p id="info"></p>
+
       <ul id="weekly-totals"></ul>
     </div>
 

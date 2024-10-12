@@ -73,16 +73,39 @@ function calculateRemainingDays() {
   return remainingDays > 0 ? remainingDays : 0;
 }
 
+function addNotificationBadge(days) {
+  // Get the button element
+  const rewardIcon = document.getElementById("reward-icon");
+  const rewardCount = days;
+
+  // Check if a badge already exists
+  let badge = rewardIcon.querySelector(".notification-badge");
+
+  if (rewardCount === 0) {
+    // If count is zero, remove the badge if it exists
+    if (badge) {
+      rewardIcon.removeChild(badge);
+    }
+  } else {
+    // If badge doesn't exist, create it
+    if (!badge) {
+      badge = document.createElement("div");
+      badge.className = "notification-badge";
+      rewardIcon.appendChild(badge);
+    }
+    // Update the badge text
+    badge.textContent = rewardCount;
+  }
+}
+
 // Function to display remaining days on the page
 function displayRemainingDays(remainingCaloriesCalc, poundsLeft) {
   // Calculate the remaining days
   let remainingDays = calculateRemainingDays();
   let calsPerDay = remainingCaloriesCalc / remainingDays;
 
-  let daysCount = countDaysGreaterThan1500();
-
   // Update the P element with the remaining cals per day
-  let remainingDaysText = `You've lost ${poundsLeft} pounds and earned ${daysCount} rewards!<br><br> Burn ${Math.ceil(
+  let remainingDaysText = `You've lost ${poundsLeft} pounds!<br><br> Burn ${Math.ceil(
     calsPerDay
   )} kcals/day to reach your goal.`;
   document.getElementById("info").innerHTML = remainingDaysText;
@@ -109,11 +132,24 @@ function generate45DayCalendar() {
     let currentDate = new Date(startDate);
     currentDate.setDate(startDate.getDate() + i);
 
-    // Format the date (e.g., "Sep 22")
-    let formattedDate = currentDate.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    });
+    // Format the date conditionally
+    let formattedDate;
+    if (i === 0) {
+      // First day should show month and day (e.g., "Sep 22")
+      formattedDate = currentDate.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+    } else if (currentDate.getDate() === 1) {
+      // First of each month should show only the month (e.g., "Oct")
+      formattedDate = currentDate.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+    } else {
+      // All other days should show only the day (e.g., "23")
+      formattedDate = currentDate.getDate();
+    }
 
     // Set the text content to the formatted date
     dayDiv.textContent = formattedDate;
@@ -364,6 +400,7 @@ function countDaysGreaterThan1500() {
   console.log(
     `Total number of days with calories greater than or equal to 1500: ${daysCount}`
   );
+  addNotificationBadge(daysCount);
   return daysCount;
 }
 

@@ -7,6 +7,7 @@ self.addEventListener("install", (event) => {
         "/45daychallenge/style.css",
         "/45daychallenge/app.js",
         "/45daychallenge/icon.png",
+        "/45daychallenge/manifest.json",
       ]);
     })
   );
