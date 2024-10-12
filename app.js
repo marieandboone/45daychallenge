@@ -2,10 +2,6 @@
 let caloriesData = {};
 const calorieGoal = 70000;
 
-let completedRewards = done;
-let pendingRewards = pending;
-let remainingRewards = remaining;
-
 // Function to save caloriesData to localStorage
 function saveCaloriesData() {
   localStorage.setItem("caloriesData", JSON.stringify(caloriesData));
@@ -19,20 +15,16 @@ function loadCaloriesData() {
   }
 }
 
-// Function to save completed rewards
-function saveCompletedRewards() {
-  localStorage.setItem("completedRewards", JSON.stringify(completedRewards));
+// Check if localStorage is already populated, otherwise initialize it
+if (
+  !localStorage.getItem("pendingRewards") ||
+  !localStorage.getItem("completedRewards") ||
+  !localStorage.getItem("remainingRewards")
+) {
+  localStorage.setItem("pendingRewards", JSON.stringify(pending));
+  localStorage.setItem("completedRewards", JSON.stringify(done));
+  localStorage.setItem("remainingRewards", JSON.stringify(remaining));
 }
-function savePendingRewards() {
-  localStorage.setItem("pendingRewards", JSON.stringify(pendingRewards));
-}
-function saveRemainingRewards() {
-  localStorage.setItem("remainingRewards", JSON.stringify(remainingRewards));
-}
-
-saveCompletedRewards();
-savePendingRewards();
-saveRemainingRewards();
 
 // Function to update the total calories burned and the remaining goal
 function updateCalorieGoal() {
