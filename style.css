@@ -58,6 +58,7 @@ header {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin-top: 100px;
 }
 
 #container ul {
@@ -203,6 +204,7 @@ header {
     #f9f9f9 100%
   );
   background-size: 4px 4px; /* Adjust size for crosshatching effect */
+  border-bottom: 1px solid black;
 }
 
 #progress-bar {
@@ -216,6 +218,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  border-right: 1px solid black;
   padding-right: 5px; /* Add some padding for space between text and right edge */
   color: #10162f; /* Color of the percentage text */
   font-weight: bold; /* Make the percentage text bold */
