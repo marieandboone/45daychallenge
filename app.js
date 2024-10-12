@@ -2,11 +2,14 @@
 let caloriesData = {};
 const calorieGoal = 70000;
 
+let completedRewards = done;
+let pendingRewards = pending;
+let remainingRewards = remaining;
+
 // Function to save caloriesData to localStorage
 function saveCaloriesData() {
   localStorage.setItem("caloriesData", JSON.stringify(caloriesData));
 }
-
 // Function to load caloriesData from localStorage
 function loadCaloriesData() {
   const storedData = localStorage.getItem("caloriesData");
@@ -15,6 +18,21 @@ function loadCaloriesData() {
     updateCalorieGoal();
   }
 }
+
+// Function to save completed rewards
+function saveCompletedRewards() {
+  localStorage.setItem("completedRewards", JSON.stringify(completedRewards));
+}
+function savePendingRewards() {
+  localStorage.setItem("pendingRewards", JSON.stringify(pendingRewards));
+}
+function saveRemainingRewards() {
+  localStorage.setItem("remainingRewards", JSON.stringify(remainingRewards));
+}
+
+saveCompletedRewards();
+savePendingRewards();
+saveRemainingRewards();
 
 // Function to update the total calories burned and the remaining goal
 function updateCalorieGoal() {
@@ -343,27 +361,6 @@ function submitCalories() {
     // Close the modal after submitting
     closeModal();
 
-    // first way to get sum of week one calories
-    // console.log(caloriesData);
-
-    // let weekOne = [
-    //   "Sunday, September 22, 2024",
-    //   "Monday, September 23, 2024",
-    //   "Tuesday, September 24, 2024",
-    //   "Wednesday, September 25, 2024",
-    //   "Thursday, September 26, 2024",
-    //   "Friday, September 27, 2024",
-    //   "Saturday, September 28, 2024",
-    // ];
-    // let weekOneSum = 0;
-
-    // for (const date of weekOne) {
-    //   if (caloriesData.hasOwnProperty(date)) {
-    //     weekOneSum += parseInt(caloriesData[date]);
-    //   }
-    // }
-    // console.log(weekOneSum);
-
     // Optionally, reset the input field for future inputs
     document.getElementById("calories").value = "";
   } else if (calories && calories === "0") {
@@ -410,4 +407,114 @@ window.onload = function () {
   loadCaloriesData();
   weeklyTotals();
   countDaysGreaterThan1500();
+  let pendingRewards = JSON.parse(localStorage.getItem("pendingRewards")) || [];
+  addNotificationBadge(pendingRewards.length);
 };
+
+// rewards menu
+document.getElementById("reward-icon").addEventListener("click", function () {
+  document.getElementById("menu").classList.add("open");
+  let pendingRewards = JSON.parse(localStorage.getItem("pendingRewards")) || [];
+  let completedRewards =
+    JSON.parse(localStorage.getItem("completedRewards")) || [];
+  let remainingRewards =
+    JSON.parse(localStorage.getItem("remainingRewards")) || [];
+
+  const totalEarned = completedRewards.length + pendingRewards.length;
+  setProgressRatio(completedRewards.length, totalEarned);
+
+  // Update notification badge
+  addNotificationBadge(pendingRewards.length);
+
+  renderPendingList();
+});
+
+// Update the renderPendingList function to include the checkmark click handler
+function renderPendingList() {
+  let rewardsList = document.getElementById("rewards-due");
+  rewardsList.innerHTML = "";
+
+  let currentPendingList =
+    JSON.parse(localStorage.getItem("pendingRewards")) || [];
+
+  currentPendingList.forEach((item, i) => {
+    const li = document.createElement("li");
+    li.textContent = `${i + 1}: ${item}`;
+
+    // Create button
+    const button = document.createElement("button");
+    // Add SVG for checkmark
+    button.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" width="100%" fill="#333">
+        <path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/>
+      </svg>
+    `;
+
+    // Add click event listener to remove the li
+    button.addEventListener("click", () => {
+      handleCheckmarkClick(i);
+    });
+
+    // Append the button to the li
+    li.appendChild(button);
+    rewardsList.appendChild(li);
+  });
+}
+
+document.getElementById("close-menu").addEventListener("click", function () {
+  document.getElementById("menu").classList.remove("open");
+});
+
+function setProgressRatio(current, total) {
+  const percent = (current / total) * 100;
+  const progressCircle = document.querySelector(".progress-circle");
+  const text = document.querySelector(".progress-text");
+
+  progressCircle.style.background = `conic-gradient(#ffd300 0% ${percent}%, #e0e0e0 ${percent}% 100%)`;
+  text.textContent = `${current}/${total}`;
+}
+
+// Function to handle when the checkmark is clicked
+function handleCheckmarkClick(itemIndex) {
+  // Retrieve rewards data from local storage
+  let pendingRewards = JSON.parse(localStorage.getItem("pendingRewards")) || [];
+  let completedRewards =
+    JSON.parse(localStorage.getItem("completedRewards")) || [];
+  let remainingRewards =
+    JSON.parse(localStorage.getItem("remainingRewards")) || [];
+
+  // Remove item from pending rewards
+  const [removedItem] = pendingRewards.splice(itemIndex, 1);
+
+  // Add item to completed rewards
+  completedRewards.push(removedItem);
+
+  // Save updated rewards data to local storage
+  localStorage.setItem("pendingRewards", JSON.stringify(pendingRewards));
+  localStorage.setItem("completedRewards", JSON.stringify(completedRewards));
+
+  // Update progress bar
+  const totalEarned = completedRewards.length + pendingRewards.length;
+  setProgressRatio(completedRewards.length, totalEarned);
+
+  // Update notification badge
+  addNotificationBadge(pendingRewards.length);
+
+  // Check if there are more rewards earned than completed + pending
+  const daysOver1500 = countDaysGreaterThan1500();
+  if (daysOver1500 > totalEarned) {
+    // Pick a random reward from remaining rewards
+    const randomIndex = Math.floor(Math.random() * remainingRewards.length);
+    const randomReward = remainingRewards.splice(randomIndex, 1)[0];
+
+    // Add the random reward to pending rewards
+    pendingRewards.push(randomReward);
+
+    // Save updated remaining and pending rewards to local storage
+    localStorage.setItem("remainingRewards", JSON.stringify(remainingRewards));
+    localStorage.setItem("pendingRewards", JSON.stringify(pendingRewards));
+  }
+
+  // Re-render the pending rewards list
+  renderPendingList();
+}

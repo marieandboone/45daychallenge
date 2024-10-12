@@ -1,0 +1,46 @@
+const remaining = [
+  "date night",
+  "naked sauna",
+  "watch a movie together",
+  "snuggies + cuddles",
+  "shower together",
+  "back massage w/ lotion",
+  "go down...",
+  "bj",
+  "date night",
+  "you choose!",
+  "sexy time",
+  "shower together",
+  "let's get it on",
+  "lotion massage of choice",
+  "snuggies + cuddles",
+  "foot massage",
+  "use toys",
+  "bj",
+  "your pick!",
+  "movie/show together",
+  "go down...",
+  "sexy time!",
+  "bj",
+  "closet quickie",
+];
+
+const done = [
+  "massage gun",
+  "go down...",
+  "massage gun",
+  "massage of your choice",
+  "bj",
+  "naked sauna",
+  "massage gun",
+  "use toys",
+  "69",
+  "neck massage",
+];
+
+const pending = [
+  "shower together",
+  "closet quickie",
+  "date night",
+  "back massage w/ lotion",
+];
