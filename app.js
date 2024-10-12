@@ -350,6 +350,20 @@ function submitCalories() {
 
     weeklyTotals();
 
+    // Count days with calories greater than or equal to 1500 and update notification badge
+    const daysCount = countDaysGreaterThan1500();
+    addNotificationBadge(daysCount);
+
+    // Update rewards page elements
+    let pendingRewards =
+      JSON.parse(localStorage.getItem("pendingRewards")) || [];
+    addNotificationBadge(pendingRewards.length);
+    renderPendingList();
+    setProgressRatio(
+      completedRewards.length,
+      pendingRewards.length + completedRewards.length
+    );
+
     // Close the modal after submitting
     closeModal();
 
@@ -366,11 +380,9 @@ function submitCalories() {
     weeklyTotals();
     closeModal();
     document.getElementById("calories").value = "";
-    console.log(caloriesData);
   } else {
     alert("Please enter a valid number of calories.");
   }
-  countDaysGreaterThan1500();
 }
 
 // Attach event listeners for the modal buttons
