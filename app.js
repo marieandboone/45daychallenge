@@ -2,6 +2,28 @@
 let caloriesData = {};
 const calorieGoal = 70000;
 
+let existingCaloriesData = {
+  "Monday, September 23, 2024": "2087",
+  "Tuesday, September 24, 2024": "2349",
+  "Wednesday, September 25, 2024": "1920",
+  "Thursday, September 26, 2024": "1731",
+  "Friday, September 27, 2024": "1848",
+  "Saturday, September 28, 2024": "508",
+  "Sunday, September 29, 2024": "514",
+  "Monday, September 30, 2024": "1520",
+  "Tuesday, October 1, 2024": "1550",
+  "Wednesday, October 2, 2024": "2083",
+  "Thursday, October 3, 2024": "1647",
+  "Friday, October 4, 2024": "1228",
+  "Saturday, October 5, 2024": "1618",
+  "Sunday, October 6, 2024": "951",
+  "Monday, October 7, 2024": "1756",
+  "Tuesday, October 8, 2024": "2228",
+  "Wednesday, October 9, 2024": "1945",
+  "Thursday, October 10, 2024": "1225",
+  "Friday, October 11, 2024": "2105",
+};
+
 // Function to save caloriesData to localStorage
 function saveCaloriesData() {
   localStorage.setItem("caloriesData", JSON.stringify(caloriesData));
@@ -24,6 +46,10 @@ if (
   localStorage.setItem("pendingRewards", JSON.stringify(pending));
   localStorage.setItem("completedRewards", JSON.stringify(done));
   localStorage.setItem("remainingRewards", JSON.stringify(remaining));
+}
+
+if (!localStorage.getItem("caloriesData")) {
+  localStorage.setItem("caloriesData", JSON.stringify(existingCaloriesData));
 }
 
 // Function to update the total calories burned and the remaining goal
@@ -340,29 +366,12 @@ function submitCalories() {
     // Save the updated data to localStorage
     saveCaloriesData();
 
-    // Find the corresponding day in the calendar and update the display
-    let dayDiv = document.querySelectorAll(".day")[dayIndex];
-    let caloriesDisplay = dayDiv.querySelector(".calories-display");
-    caloriesDisplay.textContent = `${calories}`;
-
     // Update the total calories burned and remaining goal
     updateCalorieGoal();
-
     weeklyTotals();
 
-    // Count days with calories greater than or equal to 1500 and update notification badge
-    const daysCount = countDaysGreaterThan1500();
-    addNotificationBadge(daysCount);
-
-    // Update rewards page elements
-    let pendingRewards =
-      JSON.parse(localStorage.getItem("pendingRewards")) || [];
-    addNotificationBadge(pendingRewards.length);
-    renderPendingList();
-    setProgressRatio(
-      completedRewards.length,
-      pendingRewards.length + completedRewards.length
-    );
+    // Count and update rewards
+    countDaysGreaterThan1500();
 
     // Close the modal after submitting
     closeModal();
@@ -370,19 +379,49 @@ function submitCalories() {
     // Optionally, reset the input field for future inputs
     document.getElementById("calories").value = "";
   } else if (calories && calories === "0") {
+    // Handle calorie deletion
     delete caloriesData[selectedDate];
     saveCaloriesData();
     let dayDiv = document.querySelectorAll(".day")[dayIndex];
     let caloriesDisplay = dayDiv.querySelector(".calories-display");
     caloriesDisplay.textContent = "";
     updateCalorieGoal();
-
     weeklyTotals();
+
+    // Count and update rewards
+    countDaysGreaterThan1500();
     closeModal();
     document.getElementById("calories").value = "";
   } else {
     alert("Please enter a valid number of calories.");
   }
+  console.log(caloriesData);
+}
+
+function updatePendingRewards(daysOver1500) {
+  let pendingRewards = JSON.parse(localStorage.getItem("pendingRewards")) || [];
+  let completedRewards =
+    JSON.parse(localStorage.getItem("completedRewards")) || [];
+  let remainingRewards =
+    JSON.parse(localStorage.getItem("remainingRewards")) || [];
+
+  let totalEarned = completedRewards.length + pendingRewards.length;
+
+  if (daysOver1500 > totalEarned && remainingRewards.length > 0) {
+    while (daysOver1500 > totalEarned && remainingRewards.length > 0) {
+      const randomIndex = Math.floor(Math.random() * remainingRewards.length);
+      const randomReward = remainingRewards.splice(randomIndex, 1)[0];
+      if (randomReward) {
+        pendingRewards.push(randomReward);
+      }
+      totalEarned++;
+    }
+  }
+
+  localStorage.setItem("pendingRewards", JSON.stringify(pendingRewards));
+  localStorage.setItem("remainingRewards", JSON.stringify(remainingRewards));
+
+  renderPendingList();
 }
 
 // Attach event listeners for the modal buttons
@@ -401,8 +440,45 @@ function countDaysGreaterThan1500() {
   console.log(
     `Total number of days with calories greater than or equal to 1500: ${daysCount}`
   );
-  addNotificationBadge(daysCount);
+  updateRewardsBasedOnDays(daysCount); // New function to handle reward updates
   return daysCount;
+}
+
+function updateRewardsBasedOnDays(daysOver1500) {
+  let pendingRewards = JSON.parse(localStorage.getItem("pendingRewards")) || [];
+  let completedRewards =
+    JSON.parse(localStorage.getItem("completedRewards")) || [];
+  let remainingRewards =
+    JSON.parse(localStorage.getItem("remainingRewards")) || [];
+
+  let totalEarned = completedRewards.length + pendingRewards.length;
+
+  if (daysOver1500 > totalEarned && remainingRewards.length > 0) {
+    // Add items from remaining to pending if more days qualify
+    while (daysOver1500 > totalEarned && remainingRewards.length > 0) {
+      const randomIndex = Math.floor(Math.random() * remainingRewards.length);
+      const randomReward = remainingRewards.splice(randomIndex, 1)[0];
+      if (randomReward) {
+        pendingRewards.push(randomReward);
+      }
+      totalEarned++;
+    }
+  } else if (daysOver1500 < totalEarned) {
+    // Remove items from pending if fewer days qualify
+    while (totalEarned > daysOver1500 && pendingRewards.length > 0) {
+      const removedReward = pendingRewards.pop();
+      remainingRewards.push(removedReward);
+      totalEarned--;
+    }
+  }
+
+  localStorage.setItem("pendingRewards", JSON.stringify(pendingRewards));
+  localStorage.setItem("remainingRewards", JSON.stringify(remainingRewards));
+
+  // Update the notification badge, progress circle, and rewards list
+  addNotificationBadge(pendingRewards.length);
+  renderPendingList();
+  setProgressRatio(completedRewards.length, daysOver1500);
 }
 
 // Load saved data from localStorage when the page loads
@@ -424,13 +500,15 @@ document.getElementById("reward-icon").addEventListener("click", function () {
   let remainingRewards =
     JSON.parse(localStorage.getItem("remainingRewards")) || [];
 
-  const totalEarned = completedRewards.length + pendingRewards.length;
+  const totalEarned = countDaysGreaterThan1500();
   setProgressRatio(completedRewards.length, totalEarned);
 
-  // Update notification badge
-  addNotificationBadge(pendingRewards.length);
+  let difference = totalEarned - completedRewards.length;
 
-  renderPendingList();
+  // Update notification badge
+  addNotificationBadge(difference);
+
+  updatePendingRewards(totalEarned);
 });
 
 // Update the renderPendingList function to include the checkmark click handler
@@ -478,47 +556,26 @@ function setProgressRatio(current, total) {
   text.textContent = `${current}/${total}`;
 }
 
-// Function to handle when the checkmark is clicked
 function handleCheckmarkClick(itemIndex) {
-  // Retrieve rewards data from local storage
   let pendingRewards = JSON.parse(localStorage.getItem("pendingRewards")) || [];
   let completedRewards =
     JSON.parse(localStorage.getItem("completedRewards")) || [];
   let remainingRewards =
     JSON.parse(localStorage.getItem("remainingRewards")) || [];
 
-  // Remove item from pending rewards
   const [removedItem] = pendingRewards.splice(itemIndex, 1);
-
-  // Add item to completed rewards
   completedRewards.push(removedItem);
 
-  // Save updated rewards data to local storage
   localStorage.setItem("pendingRewards", JSON.stringify(pendingRewards));
   localStorage.setItem("completedRewards", JSON.stringify(completedRewards));
 
-  // Update progress bar
-  const totalEarned = completedRewards.length + pendingRewards.length;
-  setProgressRatio(completedRewards.length, totalEarned);
-
-  // Update notification badge
-  addNotificationBadge(pendingRewards.length);
-
-  // Check if there are more rewards earned than completed + pending
   const daysOver1500 = countDaysGreaterThan1500();
-  if (daysOver1500 > totalEarned) {
-    // Pick a random reward from remaining rewards
-    const randomIndex = Math.floor(Math.random() * remainingRewards.length);
-    const randomReward = remainingRewards.splice(randomIndex, 1)[0];
+  updatePendingRewards(daysOver1500);
 
-    // Add the random reward to pending rewards
-    pendingRewards.push(randomReward);
-
-    // Save updated remaining and pending rewards to local storage
-    localStorage.setItem("remainingRewards", JSON.stringify(remainingRewards));
-    localStorage.setItem("pendingRewards", JSON.stringify(pendingRewards));
-  }
-
-  // Re-render the pending rewards list
   renderPendingList();
+  setProgressRatio(
+    completedRewards.length,
+    pendingRewards.length + completedRewards.length
+  );
+  addNotificationBadge(pendingRewards.length);
 }
