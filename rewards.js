@@ -23,6 +23,7 @@ const remaining = [
   "sexy time!",
   "bj",
   "closet quickie",
+  "69",
 ];
 
 const done = [
