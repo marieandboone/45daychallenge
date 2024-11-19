@@ -2,27 +2,44 @@
 let caloriesData = {};
 const calorieGoal = 70000;
 
-let existingCaloriesData = {
-  "Monday, September 23, 2024": "2087",
-  "Tuesday, September 24, 2024": "2349",
-  "Wednesday, September 25, 2024": "1920",
-  "Thursday, September 26, 2024": "1731",
-  "Friday, September 27, 2024": "1848",
-  "Saturday, September 28, 2024": "508",
-  "Sunday, September 29, 2024": "514",
-  "Monday, September 30, 2024": "1520",
-  "Tuesday, October 1, 2024": "1550",
-  "Wednesday, October 2, 2024": "2083",
-  "Thursday, October 3, 2024": "1647",
-  "Friday, October 4, 2024": "1228",
-  "Saturday, October 5, 2024": "1618",
-  "Sunday, October 6, 2024": "951",
-  "Monday, October 7, 2024": "1756",
-  "Tuesday, October 8, 2024": "2228",
-  "Wednesday, October 9, 2024": "1945",
-  "Thursday, October 10, 2024": "1225",
-  "Friday, October 11, 2024": "2105",
-};
+// Create a date object for September 22 of the current year
+let currentYear = new Date().getFullYear();
+let startDate = new Date(currentYear, 10, 25); // September is month 8 (0-indexed)
+let daysInCalendar = 45;
+
+// let existingCaloriesData = {
+//   "Monday, September 23, 2024": "2087",
+//   "Tuesday, September 24, 2024": "2349",
+//   "Wednesday, September 25, 2024": "1920",
+//   "Thursday, September 26, 2024": "1731",
+//   "Friday, September 27, 2024": "1848",
+//   "Saturday, September 28, 2024": "508",
+//   "Sunday, September 29, 2024": "514",
+//   "Monday, September 30, 2024": "1520",
+//   "Tuesday, October 1, 2024": "1550",
+//   "Wednesday, October 2, 2024": "2083",
+//   "Thursday, October 3, 2024": "1647",
+//   "Friday, October 4, 2024": "1228",
+//   "Saturday, October 5, 2024": "1618",
+//   "Sunday, October 6, 2024": "951",
+//   "Monday, October 7, 2024": "1756",
+//   "Tuesday, October 8, 2024": "2228",
+//   "Wednesday, October 9, 2024": "1945",
+//   "Thursday, October 10, 2024": "1225",
+//   "Friday, October 11, 2024": "2105",
+// };
+
+// if (!localStorage.getItem("caloriesData")) {
+//   localStorage.setItem("caloriesData", JSON.stringify(existingCaloriesData));
+// }
+function initializeRewards() {
+  const storedRewards = localStorage.getItem("remainingRewards");
+
+  if (!storedRewards) {
+    // Save `allRewards` to `remainingRewards` in localStorage
+    localStorage.setItem("remainingRewards", JSON.stringify(allRewards));
+  }
+}
 
 // Function to save caloriesData to localStorage
 function saveCaloriesData() {
@@ -37,26 +54,21 @@ function loadCaloriesData() {
   }
 }
 
-// Check if localStorage is already populated, otherwise initialize it
-if (
-  !localStorage.getItem("pendingRewards") ||
-  !localStorage.getItem("completedRewards") ||
-  !localStorage.getItem("remainingRewards")
-) {
-  localStorage.setItem("pendingRewards", JSON.stringify(pending));
-  localStorage.setItem("completedRewards", JSON.stringify(done));
-  localStorage.setItem("remainingRewards", JSON.stringify(remaining));
-}
+// // Check if localStorage is already populated, otherwise initialize it
+// if (
+//   !localStorage.getItem("pendingRewards") ||
+//   !localStorage.getItem("completedRewards") ||
+//   !localStorage.getItem("remainingRewards")
+// ) {
+//   localStorage.setItem("pendingRewards", JSON.stringify(pending));
+//   localStorage.setItem("completedRewards", JSON.stringify(done));
+//   localStorage.setItem("remainingRewards", JSON.stringify(remaining));
+// }
 
-if (!localStorage.getItem("caloriesData")) {
-  localStorage.setItem("caloriesData", JSON.stringify(existingCaloriesData));
-}
-
-// Function to update the total calories burned and the remaining goal
 function updateCalorieGoal() {
   // Sum the calories burned from all days
   let totalCaloriesBurned = Object.values(caloriesData).reduce(
-    (total, calories) => total + Number(calories),
+    (total, dayData) => total + (Number(dayData.calories) || 0),
     0
   );
 
@@ -64,10 +76,10 @@ function updateCalorieGoal() {
 
   // Calculate remaining calories to reach the goal
   let remainingCaloriesCalc = calorieGoal - totalCaloriesBurned;
-  let remainingCalories = remainingCaloriesCalc.toLocaleString();
+  let remainingCalories = remainingCaloriesCalc > 0 ? remainingCaloriesCalc : 0;
 
   // Update the H2 element with the total burned and the remaining to the goal
-  let calorieGoalText = `Calories Burned: ${totalCaloriesBurned.toLocaleString()} / 70,000 (${remainingCalories} left)`;
+  let calorieGoalText = `Calories Burned: ${totalCaloriesBurned.toLocaleString()} / 70,000 (${remainingCalories.toLocaleString()} left)`;
   document.getElementById("calorieGoal").textContent = calorieGoalText;
 
   // Update progress bar
@@ -76,23 +88,32 @@ function updateCalorieGoal() {
   progressBar.style.width = `${progressPercentage}%`;
   progressBar.textContent = `${Math.round(progressPercentage)}%`;
 
-  // Update the display on each date in the calendar if calories have been entered
+  // Update the display on each date in the calendar
   document.querySelectorAll(".day").forEach((dayDiv, index) => {
     let dayDate = dayDiv.title;
+
     if (caloriesData[dayDate]) {
+      const { calories, pushups, jumprope } = caloriesData[dayDate];
+      const caloriesMet = (Number(calories) || 0) >= 1500;
+      const pushupsMet = (Number(pushups) || 0) >= 100;
+      const jumpropeMet = (Number(jumprope) || 0) >= 1000;
+
+      // Update the dots display
       let caloriesDisplay = dayDiv.querySelector(".calories-display");
-      caloriesDisplay.textContent = `${caloriesData[dayDate]}`;
+      caloriesDisplay.innerHTML = `
+        <span class="goal-dot ${caloriesMet ? "goal-met" : ""}"></span>
+        <span class="goal-dot ${pushupsMet ? "goal-met" : ""}"></span>
+        <span class="goal-dot ${jumpropeMet ? "goal-met" : ""}"></span>
+      `;
     }
   });
+
+  // Calculate remaining days and update the info section
   displayRemainingDays(remainingCaloriesCalc, poundsLeft);
 }
 
 // Function to calculate the number of days remaining from the 45 days
 function calculateRemainingDays() {
-  // Set the start date (September 22)
-  let currentYear = new Date().getFullYear();
-  let startDate = new Date(currentYear, 8, 22); // September is month 8 (0-indexed)
-
   // Get the current date
   let currentDate = new Date();
 
@@ -138,7 +159,8 @@ function addNotificationBadge(days) {
 function displayRemainingDays(remainingCaloriesCalc, poundsLeft) {
   // Calculate the remaining days
   let remainingDays = calculateRemainingDays();
-  let calsPerDay = remainingCaloriesCalc / remainingDays;
+  let calsPerDay =
+    remainingDays > 0 ? remainingCaloriesCalc / remainingDays : 0;
 
   // Update the P element with the remaining cals per day
   let remainingDaysText = `You've lost ${poundsLeft} pounds!<br><br> Burn ${Math.ceil(
@@ -149,12 +171,6 @@ function displayRemainingDays(remainingCaloriesCalc, poundsLeft) {
 
 // Function to generate a 45-day calendar starting from September 22
 function generate45DayCalendar() {
-  // Create a date object for September 22 of the current year
-  let currentYear = new Date().getFullYear();
-  let startDate = new Date(currentYear, 8, 22); // September is month 8 (0-indexed)
-
-  let daysInCalendar = 45;
-
   // Get calendar container
   let calendarContainer = document.getElementById("calendar");
 
@@ -221,15 +237,25 @@ function openModal(selectedDate, dayIndex) {
   // Set the modal date
   document.getElementById(
     "modalDate"
-  ).textContent = `Enter calories burned for: ${selectedDate}`;
+  ).textContent = `Enter values for: ${selectedDate}`;
 
   // Store the selected date and index in the modal's data attributes
-  document
-    .getElementById("calorieModal")
-    .setAttribute("data-date", selectedDate);
-  document
-    .getElementById("calorieModal")
-    .setAttribute("data-day-index", dayIndex);
+  const modal = document.getElementById("calorieModal");
+  modal.setAttribute("data-date", selectedDate);
+  modal.setAttribute("data-day-index", dayIndex);
+
+  // Check if there are existing values for the selected date
+  if (caloriesData[selectedDate]) {
+    const dayData = caloriesData[selectedDate];
+    document.getElementById("calories").value = dayData.calories || "";
+    document.getElementById("pushups").value = dayData.pushups || "";
+    document.getElementById("jumprope").value = dayData.jumprope || "";
+  } else {
+    // Clear the inputs if no data exists
+    document.getElementById("calories").value = "";
+    document.getElementById("pushups").value = "";
+    document.getElementById("jumprope").value = "";
+  }
 }
 
 // Function to close the modal
@@ -239,114 +265,60 @@ function closeModal() {
 
 // Function to sum weekly calories based on start date
 function weeklyTotals() {
-  const ul = document.getElementById("weekly-totals");
-  // Define the start and end of the week you are interested in (example: week of September 23-27, 2024)
-  const startOfWeekOne = new Date("September 22, 2024");
-  const endOfWeekOne = new Date("September 28, 2024");
-
-  const startOfWeekTwo = new Date("September 29, 2024");
-  const endOfWeekTwo = new Date("October 5, 2024");
-
-  const startOfWeekThree = new Date("October 6, 2024");
-  const endOfWeekThree = new Date("October 12, 2024");
-
-  const startOfWeekFour = new Date("October 13, 2024");
-  const endOfWeekFour = new Date("October 19, 2024");
-
-  const startOfWeekFive = new Date("October 20, 2024");
-  const endOfWeekFive = new Date("October 26, 2024");
-
-  const startOfWeekSix = new Date("October 27, 2024");
-  const endOfWeekSix = new Date("November 2, 2024");
-
-  const startOfWeekSeven = new Date("November 3, 2024");
-  const endOfWeekSeven = new Date("November 5, 2024");
-
-  // Function to get values from the object for the specified week
-  let weekOneResult = [0];
-  let weekTwoResult = [0];
-  let weekThreeResult = [0];
-  let weekFourResult = [0];
-  let weekFiveResult = [0];
-  let weekSixResult = [0];
-  let weekSevenResult = [0];
-
-  for (const dateStr in caloriesData) {
-    // Convert the string date in the object key to an actual Date object
-    const currentDate = new Date(dateStr);
-
-    // Check if the current date falls within the desired week
-    if (currentDate >= startOfWeekOne && currentDate <= endOfWeekOne) {
-      weekOneResult.push(caloriesData[dateStr]);
-    } else if (currentDate >= startOfWeekTwo && currentDate <= endOfWeekTwo) {
-      weekTwoResult.push(caloriesData[dateStr]);
-    } else if (
-      currentDate >= startOfWeekThree &&
-      currentDate <= endOfWeekThree
-    ) {
-      weekThreeResult.push(caloriesData[dateStr]);
-    } else if (currentDate >= startOfWeekFour && currentDate <= endOfWeekFour) {
-      weekFourResult.push(caloriesData[dateStr]);
-    } else if (currentDate >= startOfWeekFive && currentDate <= endOfWeekFive) {
-      weekFiveResult.push(caloriesData[dateStr]);
-    } else if (currentDate >= startOfWeekSix && currentDate <= endOfWeekSix) {
-      weekSixResult.push(caloriesData[dateStr]);
-    } else if (
-      currentDate >= startOfWeekSeven &&
-      currentDate <= endOfWeekSeven
-    ) {
-      weekSevenResult.push(caloriesData[dateStr]);
-    }
+  if (!startDate) {
+    console.error(
+      "Challenge start date is not defined. Please generate the calendar first."
+    );
+    return;
   }
 
-  let sumOne = weekOneResult
-    .map((str) => parseInt(str))
-    .reduce((acc, num) => acc + num);
-  let sumTwo = weekTwoResult
-    .map((str) => parseInt(str))
-    .reduce((acc, num) => acc + num);
-  let sumThree = weekThreeResult
-    .map((str) => parseInt(str))
-    .reduce((acc, num) => acc + num);
-  let sumFour = weekFourResult
-    .map((str) => parseInt(str))
-    .reduce((acc, num) => acc + num);
-  let sumFive = weekFiveResult
-    .map((str) => parseInt(str))
-    .reduce((acc, num) => acc + num);
-  let sumSix = weekSixResult
-    .map((str) => parseInt(str))
-    .reduce((acc, num) => acc + num);
-  let sumSeven = weekSevenResult
-    .map((str) => parseInt(str))
-    .reduce((acc, num) => acc + num);
+  const ul = document.getElementById("weekly-totals");
+  const weeks = 7; // Total number of weeks
+  const weekRanges = [];
 
-  let totalsArray = [
-    sumOne,
-    sumTwo,
-    sumThree,
-    sumFour,
-    sumFive,
-    sumSix,
-    sumSeven,
-  ];
-  // Output the filtered result
+  // Generate weekly date ranges
+  for (let i = 0; i < weeks; i++) {
+    const weekStart = new Date(startDate);
+    weekStart.setDate(startDate.getDate() + i * 7);
 
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+
+    weekRanges.push({ weekStart, weekEnd });
+  }
+
+  // Calculate totals for each week
+  const weeklyResults = weekRanges.map(({ weekStart, weekEnd }) => {
+    let total = 0;
+
+    for (const dateStr in caloriesData) {
+      // Parse the date string into a Date object for comparison
+      const currentDate = new Date(dateStr);
+
+      if (currentDate >= weekStart && currentDate <= weekEnd) {
+        const dayData = caloriesData[dateStr];
+        total += parseInt(dayData.calories || 0, 10);
+      }
+    }
+
+    return total;
+  });
+
+  // Clear the existing list
   while (ul.firstChild) {
     ul.removeChild(ul.firstChild);
   }
 
-  for (let i = 0; i < totalsArray.length; i++) {
-    let ulLi = document.createElement("li");
-    // let weekNumber = ["One", "Two", "Three", "Four", "Five", "Six", "Seven"];
-    ulLi.innerText = `Week ${i + 1}: ${totalsArray[i]} kcals (${(
-      totalsArray[i] / 3500
-    ).toFixed(1)} lbs)`;
-    ul.appendChild(ulLi);
-  }
+  // Populate the weekly totals in the list
+  weeklyResults.forEach((total, index) => {
+    const li = document.createElement("li");
+    li.innerText = `Week ${index + 1}: ${total} kcals (${(total / 3500).toFixed(
+      1
+    )} lbs)`;
+    ul.appendChild(li);
+  });
 }
 
-// Function to submit calories for the selected date
 function submitCalories() {
   // Get the selected date and day index from the modal
   let selectedDate = document
@@ -356,28 +328,36 @@ function submitCalories() {
     .getElementById("calorieModal")
     .getAttribute("data-day-index");
 
-  // Get the entered calorie value
   let calories = document.getElementById("calories").value;
+  let pushups = document.getElementById("pushups").value;
+  let jumprope = document.getElementById("jumprope").value;
 
-  if (calories && calories > 0) {
-    // Store the calories burned for the selected date in the data structure
-    caloriesData[selectedDate] = calories;
-
-    // Save the updated data to localStorage
+  if (calories > 0 || pushups > 0 || jumprope > 0) {
+    caloriesData[selectedDate] = {
+      calories: calories,
+      pushups: pushups,
+      jumprope: jumprope,
+    };
     saveCaloriesData();
-
-    // Update the total calories burned and remaining goal
     updateCalorieGoal();
     weeklyTotals();
 
-    // Count and update rewards
-    countDaysGreaterThan1500();
+    // Update rewards and notification badge
+    let daysMeetingCriteria = countDaysMeetingCriteria();
+    updateRewardsBasedOnDays(daysMeetingCriteria);
+    renderPendingList();
 
-    // Close the modal after submitting
+    // Update badge
+    let pendingRewards =
+      JSON.parse(localStorage.getItem("pendingRewards")) || [];
+    addNotificationBadge(pendingRewards.length);
+
     closeModal();
 
-    // Optionally, reset the input field for future inputs
+    // Reset inputs
     document.getElementById("calories").value = "";
+    document.getElementById("pushups").value = "";
+    document.getElementById("jumprope").value = "";
   } else if (calories && calories === "0") {
     // Handle calorie deletion
     delete caloriesData[selectedDate];
@@ -388,8 +368,15 @@ function submitCalories() {
     updateCalorieGoal();
     weeklyTotals();
 
-    // Count and update rewards
-    countDaysGreaterThan1500();
+    // Update rewards
+    let daysMeetingCriteria = countDaysMeetingCriteria();
+    updateRewardsBasedOnDays(daysMeetingCriteria);
+
+    // Update notification badge
+    let pendingRewards =
+      JSON.parse(localStorage.getItem("pendingRewards")) || [];
+    addNotificationBadge(pendingRewards.length);
+
     closeModal();
     document.getElementById("calories").value = "";
   } else {
@@ -431,11 +418,15 @@ document
   .addEventListener("click", submitCalories);
 
 // Function to count all days with calories greater than or equal to 1500
-function countDaysGreaterThan1500() {
+function countDaysMeetingCriteria() {
   // Get the number of days with calories greater than or equal to 1500 from caloriesData
-  let daysCount = Object.entries(caloriesData).filter(
-    ([date, calories]) => Number(calories) >= 1500
-  ).length;
+  let daysCount = Object.entries(caloriesData).filter(([date, values]) => {
+    const calories = Number(values.calories) || 0;
+    const pushups = Number(values.pushups) || 0;
+    const jumprope = Number(values.jumprope) || 0;
+
+    return calories >= 1500 && pushups >= 100 && jumprope >= 1000;
+  }).length;
 
   console.log(
     `Total number of days with calories greater than or equal to 1500: ${daysCount}`
@@ -483,10 +474,12 @@ function updateRewardsBasedOnDays(daysOver1500) {
 
 // Load saved data from localStorage when the page loads
 window.onload = function () {
+  // Call this function during app initialization
+  initializeRewards();
   generate45DayCalendar();
   loadCaloriesData();
   weeklyTotals();
-  countDaysGreaterThan1500();
+  countDaysMeetingCriteria();
   let pendingRewards = JSON.parse(localStorage.getItem("pendingRewards")) || [];
   addNotificationBadge(pendingRewards.length);
 };
@@ -500,7 +493,7 @@ document.getElementById("reward-icon").addEventListener("click", function () {
   let remainingRewards =
     JSON.parse(localStorage.getItem("remainingRewards")) || [];
 
-  const totalEarned = countDaysGreaterThan1500();
+  const totalEarned = countDaysMeetingCriteria();
   setProgressRatio(completedRewards.length, totalEarned);
 
   let difference = totalEarned - completedRewards.length;
@@ -569,7 +562,7 @@ function handleCheckmarkClick(itemIndex) {
   localStorage.setItem("pendingRewards", JSON.stringify(pendingRewards));
   localStorage.setItem("completedRewards", JSON.stringify(completedRewards));
 
-  const daysOver1500 = countDaysGreaterThan1500();
+  const daysOver1500 = countDaysMeetingCriteria();
   updatePendingRewards(daysOver1500);
 
   renderPendingList();

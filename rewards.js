@@ -1,4 +1,4 @@
-const remaining = [
+const allRewards = [
   "date night",
   "naked sauna",
   "watch a movie together",
@@ -24,9 +24,6 @@ const remaining = [
   "bj",
   "closet quickie",
   "69",
-];
-
-const done = [
   "massage gun",
   "go down...",
   "massage gun",
@@ -37,9 +34,6 @@ const done = [
   "use toys",
   "69",
   "neck massage",
-];
-
-const pending = [
   "shower together",
   "closet quickie",
   "date night",

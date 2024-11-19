@@ -186,10 +186,11 @@ li button {
 
 /* Show calories burned below the date */
 .calories-display {
-  font-size: 1rem;
-  color: #3a10e5;
-  margin-top: 5px;
-  text-align: center;
+  display: flex; /* Use flexbox to align the dots */
+  justify-content: space-between; /* Evenly space the dots */
+  align-items: center; /* Center align vertically */
+  /* width: 50px; Adjust the width to control spacing */
+  margin: 10px auto; /* Center the display horizontally */
 }
 
 /* Modal styles */
@@ -309,4 +310,20 @@ li button {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Style for the goal dots */
+.goal-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin: 0 4px;
+  background-color: black; /* Default black dot */
+  border-radius: 50%;
+}
+
+/* Green dot for goals met */
+.goal-dot.goal-met {
+  background-color: #ffd300; /* Green dot */
+  border: 1px solid #333;
 }
