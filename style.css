@@ -190,7 +190,7 @@ li button {
   justify-content: space-between; /* Evenly space the dots */
   align-items: center; /* Center align vertically */
   /* width: 50px; Adjust the width to control spacing */
-  margin: 10px auto; /* Center the display horizontally */
+  margin: 8px auto; /* Center the display horizontally */
 }
 
 /* Modal styles */
@@ -317,7 +317,7 @@ li button {
   display: inline-block;
   width: 8px;
   height: 8px;
-  margin: 0 4px;
+  margin: 0 1px;
   background-color: black; /* Default black dot */
   border-radius: 50%;
 }
