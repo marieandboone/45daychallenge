@@ -169,10 +169,20 @@ function displayRemainingDays(remainingCaloriesCalc, poundsLeft) {
   document.getElementById("info").innerHTML = remainingDaysText;
 }
 
-// Function to generate a 45-day calendar starting from September 22
 function generate45DayCalendar() {
   // Get calendar container
   let calendarContainer = document.getElementById("calendar");
+  calendarContainer.innerHTML = ""; // Clear any existing content
+
+  // Calculate the day of the week for the start date
+  let startDayOfWeek = startDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+
+  // Add empty slots for days before the start date
+  for (let i = 0; i < startDayOfWeek; i++) {
+    let emptyDiv = document.createElement("div");
+    emptyDiv.className = "day empty";
+    calendarContainer.appendChild(emptyDiv);
+  }
 
   // Loop through 45 days
   for (let i = 0; i < daysInCalendar; i++) {

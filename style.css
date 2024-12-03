@@ -372,3 +372,7 @@ input[type="checkbox"]:checked {
 #summary {
   margin-top: 5px;
 }
+
+.day.empty {
+  visibility: hidden;
+}
