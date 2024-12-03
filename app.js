@@ -96,7 +96,7 @@ function updateCalorieGoal() {
       const { calories, chordii, lift } = caloriesData[dayDate];
       const caloriesMet = (Number(calories) || 0) >= 1500;
       const chordiiMet = (Number(chordii) || 0) >= 50;
-      const liftMet = (Number(lift) || 0) >= 30;
+      const liftMet = lift === true;
 
       // Update the dots display
       let caloriesDisplay = dayDiv.querySelector(".calories-display");
@@ -249,12 +249,12 @@ function openModal(selectedDate, dayIndex) {
     const dayData = caloriesData[selectedDate];
     document.getElementById("calories").value = dayData.calories || "";
     document.getElementById("chordii").value = dayData.chordii || "";
-    document.getElementById("lift").value = dayData.lift || "";
+    document.getElementById("lift").checked = dayData.lift || "";
   } else {
     // Clear the inputs if no data exists
     document.getElementById("calories").value = "";
     document.getElementById("chordii").value = "";
-    document.getElementById("lift").value = "";
+    document.getElementById("lift").checked = "";
   }
 }
 
@@ -330,9 +330,9 @@ function submitCalories() {
 
   let calories = document.getElementById("calories").value;
   let chordii = document.getElementById("chordii").value;
-  let lift = document.getElementById("lift").value;
+  let lift = document.getElementById("lift").checked;
 
-  if (calories > 0 || chordii > 0 || lift > 0) {
+  if (calories > 0 || chordii > 0 || lift) {
     caloriesData[selectedDate] = {
       calories: calories,
       chordii: chordii,
@@ -341,6 +341,7 @@ function submitCalories() {
     saveCaloriesData();
     updateCalorieGoal();
     weeklyTotals();
+    updateChordiiAndLiftSummary();
 
     // Update rewards and notification badge
     let daysMeetingCriteria = countDaysMeetingCriteria();
@@ -357,7 +358,7 @@ function submitCalories() {
     // Reset inputs
     document.getElementById("calories").value = "";
     document.getElementById("chordii").value = "";
-    document.getElementById("lift").value = "";
+    document.getElementById("lift").checked = false;
   } else if (calories && calories === "0") {
     // Handle calorie deletion
     delete caloriesData[selectedDate];
@@ -423,9 +424,9 @@ function countDaysMeetingCriteria() {
   let daysCount = Object.entries(caloriesData).filter(([date, values]) => {
     const calories = Number(values.calories) || 0;
     const chordii = Number(values.chordii) || 0;
-    const lift = Number(values.lift) || 0;
+    const lift = values.lift === true;
 
-    return calories >= 1500 && chordii >= 50 && lift >= 30;
+    return calories >= 1500 && chordii >= 50 && lift;
   }).length;
 
   console.log(
@@ -478,6 +479,7 @@ window.onload = function () {
   initializeRewards();
   generate45DayCalendar();
   loadCaloriesData();
+  updateChordiiAndLiftSummary();
   weeklyTotals();
   countDaysMeetingCriteria();
   let pendingRewards = JSON.parse(localStorage.getItem("pendingRewards")) || [];
@@ -571,4 +573,25 @@ function handleCheckmarkClick(itemIndex) {
     pendingRewards.length + completedRewards.length
   );
   addNotificationBadge(pendingRewards.length);
+}
+
+function updateChordiiAndLiftSummary() {
+  let totalChordii = 0;
+  let daysWithLift = 0;
+
+  // Iterate through the data to calculate totals
+  Object.values(caloriesData).forEach((dayData) => {
+    if (dayData.chordii) {
+      totalChordii += Number(dayData.chordii);
+    }
+    if (dayData.lift) {
+      daysWithLift++;
+    }
+  });
+
+  let chordiiRetail = totalChordii * 15;
+
+  // Update the summary paragraph
+  const summaryElement = document.getElementById("summary");
+  summaryElement.innerHTML = `Total Chordii Assembled: ${totalChordii} ($${chordiiRetail.toLocaleString()})<br>Total Days Lifted: ${daysWithLift}`;
 }

@@ -327,3 +327,43 @@ li button {
   background-color: #ffd300; /* Green dot */
   border: 1px solid #333;
 }
+
+/* Container for the checkbox and label */
+.checkbox-container {
+  display: flex;
+  align-items: center; /* Vertically align items */
+  gap: 10px; /* Add spacing between the checkbox and label */
+  justify-content: center; /* Center horizontally (optional) */
+  margin: 0 0 5px 0;
+}
+
+/* Style for the checkbox (if not already applied) */
+input[type="checkbox"] {
+  vertical-align: middle;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #000;
+  border-radius: 4px;
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+  margin: 0 10px;
+}
+
+/* Checkbox checked state */
+input[type="checkbox"]:checked {
+  background-color: #000;
+  /* border-color: #3a10e5; */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Style for the label */
+.checkbox-container label {
+  font-size: 16px; /* Match app font size */
+  color: #000; /* Match label color with your app */
+  line-height: 1;
+}
