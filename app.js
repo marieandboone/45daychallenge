@@ -4,7 +4,7 @@ const calorieGoal = 70000;
 
 // Create a date object for September 22 of the current year
 let currentYear = new Date().getFullYear();
-let startDate = new Date(currentYear, 10, 25); // September is month 8 (0-indexed)
+let startDate = new Date(currentYear, 11, 3); // September is month 8 (0-indexed)
 let daysInCalendar = 45;
 
 // let existingCaloriesData = {
@@ -93,17 +93,17 @@ function updateCalorieGoal() {
     let dayDate = dayDiv.title;
 
     if (caloriesData[dayDate]) {
-      const { calories, pushups, jumprope } = caloriesData[dayDate];
+      const { calories, chordii, lift } = caloriesData[dayDate];
       const caloriesMet = (Number(calories) || 0) >= 1500;
-      const pushupsMet = (Number(pushups) || 0) >= 100;
-      const jumpropeMet = (Number(jumprope) || 0) >= 1000;
+      const chordiiMet = (Number(chordii) || 0) >= 50;
+      const liftMet = (Number(lift) || 0) >= 30;
 
       // Update the dots display
       let caloriesDisplay = dayDiv.querySelector(".calories-display");
       caloriesDisplay.innerHTML = `
         <span class="goal-dot ${caloriesMet ? "goal-met" : ""}"></span>
-        <span class="goal-dot ${pushupsMet ? "goal-met" : ""}"></span>
-        <span class="goal-dot ${jumpropeMet ? "goal-met" : ""}"></span>
+        <span class="goal-dot ${chordiiMet ? "goal-met" : ""}"></span>
+        <span class="goal-dot ${liftMet ? "goal-met" : ""}"></span>
       `;
     }
   });
@@ -248,13 +248,13 @@ function openModal(selectedDate, dayIndex) {
   if (caloriesData[selectedDate]) {
     const dayData = caloriesData[selectedDate];
     document.getElementById("calories").value = dayData.calories || "";
-    document.getElementById("pushups").value = dayData.pushups || "";
-    document.getElementById("jumprope").value = dayData.jumprope || "";
+    document.getElementById("chordii").value = dayData.chordii || "";
+    document.getElementById("lift").value = dayData.lift || "";
   } else {
     // Clear the inputs if no data exists
     document.getElementById("calories").value = "";
-    document.getElementById("pushups").value = "";
-    document.getElementById("jumprope").value = "";
+    document.getElementById("chordii").value = "";
+    document.getElementById("lift").value = "";
   }
 }
 
@@ -329,14 +329,14 @@ function submitCalories() {
     .getAttribute("data-day-index");
 
   let calories = document.getElementById("calories").value;
-  let pushups = document.getElementById("pushups").value;
-  let jumprope = document.getElementById("jumprope").value;
+  let chordii = document.getElementById("chordii").value;
+  let lift = document.getElementById("lift").value;
 
-  if (calories > 0 || pushups > 0 || jumprope > 0) {
+  if (calories > 0 || chordii > 0 || lift > 0) {
     caloriesData[selectedDate] = {
       calories: calories,
-      pushups: pushups,
-      jumprope: jumprope,
+      chordii: chordii,
+      lift: lift,
     };
     saveCaloriesData();
     updateCalorieGoal();
@@ -356,8 +356,8 @@ function submitCalories() {
 
     // Reset inputs
     document.getElementById("calories").value = "";
-    document.getElementById("pushups").value = "";
-    document.getElementById("jumprope").value = "";
+    document.getElementById("chordii").value = "";
+    document.getElementById("lift").value = "";
   } else if (calories && calories === "0") {
     // Handle calorie deletion
     delete caloriesData[selectedDate];
@@ -422,10 +422,10 @@ function countDaysMeetingCriteria() {
   // Get the number of days with calories greater than or equal to 1500 from caloriesData
   let daysCount = Object.entries(caloriesData).filter(([date, values]) => {
     const calories = Number(values.calories) || 0;
-    const pushups = Number(values.pushups) || 0;
-    const jumprope = Number(values.jumprope) || 0;
+    const chordii = Number(values.chordii) || 0;
+    const lift = Number(values.lift) || 0;
 
-    return calories >= 1500 && pushups >= 100 && jumprope >= 1000;
+    return calories >= 1500 && chordii >= 50 && lift >= 30;
   }).length;
 
   console.log(
