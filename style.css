@@ -121,7 +121,8 @@ li button {
 #container ul,
 #rewards-due {
   padding: 0;
-  margin-top: 20px;
+  margin-top: 5px;
+  margin-bottom: 10px;
   list-style-type: none;
 }
 
@@ -366,4 +367,8 @@ input[type="checkbox"]:checked {
   font-size: 16px; /* Match app font size */
   color: #000; /* Match label color with your app */
   line-height: 1;
+}
+
+#summary {
+  margin-top: 5px;
 }
