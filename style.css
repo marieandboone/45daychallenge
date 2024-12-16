@@ -224,6 +224,7 @@ li button {
 }
 
 .modal-content button {
+  margin-top: 5px;
   padding: 10px 20px;
   border: none;
   background-color: #3a10e5;
