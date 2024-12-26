@@ -263,30 +263,32 @@ function submitCalories() {
     document.getElementById("fast").checked = false;
     document.getElementById("chordii").checked = false;
     document.getElementById("pray").checked = false;
-  } else if (calories && calories === "0") {
-    // Handle calorie deletion
+  } else if (caloriesData[selectedDate]) {
+    // Remove data for this date
     delete caloriesData[selectedDate];
     saveCaloriesData();
-    let dayDiv = document.querySelectorAll(".day")[dayIndex];
-    let caloriesDisplay = dayDiv.querySelector(".calories-display");
-    caloriesDisplay.textContent = "";
     updateCalorieGoal();
+    updateSummary();
 
-    // Update rewards
-    let daysMeetingCriteria = countDaysMeetingCriteria();
-    updateRewardsBasedOnDays(daysMeetingCriteria);
+    // Find the correct day div based on `selectedDate`
+    let dayDiv = Array.from(document.querySelectorAll(".day")).find(
+      (day) => day.getAttribute("title") === selectedDate
+    );
 
-    // Update notification badge
-    let pendingRewards =
-      JSON.parse(localStorage.getItem("pendingRewards")) || [];
-    addNotificationBadge(pendingRewards.length);
-
+    if (dayDiv) {
+      let caloriesDisplay = dayDiv.querySelector(".calories-display");
+      if (caloriesDisplay) {
+        caloriesDisplay.innerHTML = ""; // Clear any displayed text
+      } else {
+        console.warn("calories-display element not found inside dayDiv.");
+      }
+    } else {
+      console.error(`No matching day found for date: ${selectedDate}`);
+    }
     closeModal();
-    document.getElementById("calories").value = "";
   } else {
-    alert("Please enter a valid number of calories.");
+    alert("Please select at least one option or close the modal.");
   }
-  console.log(caloriesData);
 }
 
 function updatePendingRewards(daysOver1500) {

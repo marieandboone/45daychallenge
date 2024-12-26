@@ -19,9 +19,9 @@
   "display": "standalone",
   "dir": "auto",
   "lang": "en-US",
-  "name": "45 Day Challenge",
-  "short_name": "45",
+  "name": "40 Day Challenge",
+  "short_name": "40",
   "start_url": "/45daychallenge/",
   "scope": "/45daychallenge/",
-  "description": "70k calorie tracker in 45 days"
+  "description": "40 day prayer and fast challenge"
 }
