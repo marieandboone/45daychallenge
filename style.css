@@ -373,6 +373,23 @@ input[type="checkbox"]:checked {
 
 #summary {
   margin-top: 5px;
+  width: 35%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#summary p {
+  width: 50%;
+  box-sizing: border-box;
+  margin: 2px 0;
+  padding: 0 6px 0 0;
+  text-align: right;
+}
+
+#summary span {
+  width: 50%;
+  margin: 2px 0;
+  padding: 0;
 }
 
 .day.empty {

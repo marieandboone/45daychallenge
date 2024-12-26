@@ -481,7 +481,27 @@ function updateSummary() {
   let totalDays = countDaysMeetingCriteria();
   let daysTracked = Object.entries(caloriesData).length;
 
+  let fastCount = Object.entries(caloriesData).filter(([date, values]) => {
+    const fast = values.fast === true;
+
+    return fast;
+  }).length;
+
+  let chordiiCount = Object.entries(caloriesData).filter(([date, values]) => {
+    const chordii = values.chordii === true;
+
+    return chordii;
+  }).length;
+
+  let prayCount = Object.entries(caloriesData).filter(([date, values]) => {
+    const pray = values.pray === true;
+
+    return pray;
+  }).length;
+
   // Update the summary paragraph
   const summaryElement = document.getElementById("summary");
-  summaryElement.innerHTML = `Days w/ all goals: ${totalDays} / ${daysTracked}`;
+  summaryElement.innerHTML = `<p>Fast:</p> <span>${fastCount} / ${daysTracked}</span>
+  <p>Chordii:</p> <span>${chordiiCount} / ${daysTracked}</span>
+  <p>Pray:</p> <span>${prayCount} / ${daysTracked}</span>`;
 }
