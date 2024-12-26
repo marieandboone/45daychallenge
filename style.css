@@ -133,6 +133,7 @@ li button {
 #header-container {
   padding: 0 15px;
   margin: 0 10px 10px 10px;
+  width: 90%;
 }
 
 #header-card {
@@ -224,7 +225,6 @@ li button {
 }
 
 .modal-content button {
-  margin-top: 5px;
   padding: 10px 20px;
   border: none;
   background-color: #3a10e5;
@@ -333,10 +333,11 @@ li button {
 /* Container for the checkbox and label */
 .checkbox-container {
   display: flex;
+  width: 80%;
   align-items: center; /* Vertically align items */
   gap: 10px; /* Add spacing between the checkbox and label */
-  justify-content: center; /* Center horizontally (optional) */
-  margin: 0 0 5px 0;
+  justify-content: start; /* Center horizontally (optional) */
+  margin: 0 0 5px 40px;
 }
 
 /* Style for the checkbox (if not already applied) */

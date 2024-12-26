@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="mobile-web-app-capable" content="yes" />
     <link rel="manifest" href="manifest.json" />
-    <title>45 Day Challenge - Bike</title>
+    <title>40 Day Challenge</title>
     <link rel="stylesheet" href="style.css" />
     <script>
       if ("serviceWorker" in navigator) {
@@ -82,16 +82,18 @@
     <div class="modal" id="calorieModal">
       <div class="modal-content">
         <h3 id="modalDate"></h3>
-        <label for="calories">Calories burned:</label>
-        <input
-          type="number"
-          id="calories"
-          placeholder="Minimum 1,500 kcals..."
-        />
-        <label for="chordii">Chordii assembled:</label>
-        <input type="number" id="chordii" placeholder="Minimum 50 chordii..." />
-        <label for="bike">Bike Miles:</label>
-        <input type="number" id="bike" placeholder="Minimum 15 miles..." />
+        <div class="checkbox-container">
+          <input type="checkbox" id="fast" />
+          <label for="fast">Fast</label>
+        </div>
+        <div class="checkbox-container">
+          <input type="checkbox" id="chordii" />
+          <label for="chordii">Chordii (50+)</label>
+        </div>
+        <div class="checkbox-container">
+          <input type="checkbox" id="pray" />
+          <label for="pray">Pray</label>
+        </div>
 
         <br />
         <button id="submitCalories">Submit</button>
