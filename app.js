@@ -4,7 +4,7 @@ const calorieGoal = 70000;
 
 // Create a date object for September 22 of the current year
 let currentYear = new Date().getFullYear();
-let startDate = new Date(currentYear, 11, 27); // September is month 8 (0-indexed)
+let startDate = new Date(2024, 11, 27); // September is month 8 (0-indexed)
 let daysInCalendar = 40;
 
 function initializeRewards() {
